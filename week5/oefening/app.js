@@ -80,5 +80,9 @@ async function trainingFinished() {
 }
 
 // start de applicatie
+<<<<<<< HEAD
 // drawScatterPlot()
 createNeuralNetwork()
+=======
+// drawScatterPlot()
+>>>>>>> afa7441b8ae0046f7692a075108eadaf0a85cced
