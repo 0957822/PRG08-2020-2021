@@ -3,53 +3,49 @@ let nn
 function loadData() {
     Papa.parse("./data/weather.csv", {
         download: true,
-        header: true, 
+        header: true,
         dynamicTyping: true,
         complete: (results) => cleanData(results.data)
     })
 }
 
-// TODO data kiezen en opschonen
 function cleanData(data) {
-    /*
     const cleanedData = data.map(day => ({
-
+        MinTemp: day.MinTemp,
+        MaxTemp: day.MaxTemp,
+        Sunshine: day.Sunshine,
+        RainTomorrow: day.RainTomorrow
     }))
-        .filter(day => (...)
-        .filter(day => (...)
+        .filter(day => (day.MinTemp != null && day.MaxTemp != null && day.Sunshine != null))
+        .filter(day => (!isNaN(day.MinTemp) && !isNaN(day.MaxTemp) && !isNaN(day.Sunshine)))
 
-    */
     console.log(cleanedData)
     createNeuralNetwork(cleanedData)
 }
 
-
-// create neural network
 function createNeuralNetwork(data) {
     nn = ml5.neuralNetwork({ task: 'classification', debug: true })
 
     for (let day of data) {
-        const inputs = { MinTemp: day.MinTemp, Cloudy: day.Cloudy } // TODO moet kloppen met je cleaned data
-        const output = { RainTomorrow: day.RainTomorrow } 
+        const inputs = { MinTemp: day.MinTemp, MaxTemp: day.MaxTemp, Sunshine: day.Sunshine } // TODO moet kloppen met je cleaned data
+        const output = { RainTomorrow: day.RainTomorrow }
         nn.addData(inputs, output)
     }
 
     nn.normalizeData()
-    nn.train({ epochs: 32 }, () => classify())
+    nn.train({ epochs: 16 }, () => classify())
 }
 
-
-
-// make a classification
 function classify() {
     console.log("done training!")
-    
-    const input = { Evaporation: 13, Rainfall: 13 } // TODO moet kloppen met je cleaned data
-    
+
+    const input = { MinTemp: 3, MaxTemp: 20, Sunshine: 7 }
+
     nn.classify(input, (error, result) => {
         console.log(result)
         console.log(`Rain Tomorrow: ${result[0].label}`)
     })
+
 }
 
 loadData()
